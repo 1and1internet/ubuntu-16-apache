@@ -9,3 +9,4 @@ fi
 # Clean up logfiles older than $LOGFILE_RETNENTION date
 echo "Cleaning up log files older than $LOGFILE_RETENTION days"
 find /var/log/apache2 -type f -mtime +$LOGFILE_RETENTION -exec rm {} \;
+find /var/log/apache2 -type l -mtime +$LOGFILE_RETENTION -exec rm {} \;
