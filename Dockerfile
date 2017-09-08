@@ -23,12 +23,13 @@ RUN \
   sed -i -e 's/Listen 443/#Listen 8443/g' /etc/apache2/ports.conf && \
   chmod -R 755 /hooks /init && \
   chmod 666 /etc/apache2/ports.conf && \
-  chmod -R 755 /etc/apache2/sites-available && \
-  chmod -R 777 /etc/apache2/sites-enabled && \
+  chmod -R 777 /etc/apache2/sites-* /etc/apache2/mods-* /etc/apache2/conf-* /etc/DOCUMENT_ROOT && \
   a2enmod rewrite ssl headers macro rpaf cgi expires && \
   a2disconf other-vhosts-access-log && \
   a2enconf vhosts-logging && \
   apt autoremove build-essential apache2-dev git -y && \
+  cd /opt/configurability/src/configurability_apache2_process/ && \
+  pip --no-cache install --upgrade . && \
   rm /tmp/mod_rpaf -rf && \
   rm -rf /var/lib/apt/lists/*
 
