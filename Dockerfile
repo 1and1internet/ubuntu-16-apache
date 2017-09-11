@@ -1,5 +1,5 @@
 FROM 1and1internet/ubuntu-16:latest
-MAINTAINER james.wilkins@1and1.co.uk
+MAINTAINER brian.wojtczak@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RPAF_VERSION=tags/v0.8.4
 COPY files /
