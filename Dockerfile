@@ -17,21 +17,22 @@ RUN \
   ls -la && \
   make && \
   make install && \
-  sed -i -e 's/Listen 80/Listen 8080/g' /etc/apache2/ports.conf && \
   mkdir -p /var/lock/apache2 && mkdir -p /var/run/apache2 && \
-  chmod -R 777 /var/log/apache2 /var/lock/apache2 /var/run/apache2 /var/www && \
-  echo "SSLProtocol ALL -SSLv2 -SSLv3" >> /etc/apache2/apache2.conf && \
-  sed -i -e 's/Listen 443/#Listen 8443/g' /etc/apache2/ports.conf && \
   chmod -R 755 /hooks /init && \
-  chmod 666 /etc/apache2/ports.conf && \
-  chmod -R 777 /etc/apache2/sites-* /etc/apache2/mods-* /etc/apache2/conf-* /etc/DOCUMENT_ROOT && \
+  chmod -R 777 /var/log/apache2 /var/lock/apache2 /var/run/apache2 \
+                /etc/apache2/sites-* /etc/apache2/mods-* /etc/apache2/conf-* \
+                /var/www && \
+  chmod 666 /etc/apache2/ports.conf /etc/DOCUMENT_ROOT && \
+  echo "SSLProtocol ALL -SSLv2 -SSLv3" >> /etc/apache2/apache2.conf && \
+  sed -i -e 's/Listen 80/Listen 8080/g' /etc/apache2/ports.conf && \
+  sed -i -e 's/Listen 443/#Listen 8443/g' /etc/apache2/ports.conf && \
   a2enmod rewrite ssl headers macro rpaf cgi expires && \
   a2disconf other-vhosts-access-log && \
   a2enconf vhosts-logging && \
   apt-get -y autoremove build-essential apache2-dev git && \
   cd /opt/configurability/src/configurability_apache2_process/ && \
   pip --no-cache install --upgrade . && \
-  rm /tmp/mod_rpaf -rf && \
+  rm -rf /tmp/mod_rpaf && \
   rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8080 8443
