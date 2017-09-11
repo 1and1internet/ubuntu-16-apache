@@ -7,7 +7,8 @@ ENV SSL_KEY=/ssl/ssl.key \
     SSL_CERT=/ssl/ssl.crt \
     DOCUMENT_ROOT=html
 RUN \
-  apt-get update && apt-get install -o Dpkg::Options::=--force-confdef -y apache2 cronolog build-essential git apache2-dev && \
+  apt-get update && \
+  apt-get install -o Dpkg::Options::=--force-confdef -y apache2 cronolog build-essential git apache2-dev && \
   mkdir /tmp/mod_rpaf && \
   git clone https://github.com/gnif/mod_rpaf.git /tmp/mod_rpaf && \
   update-alternatives --install /bin/sh sh /bin/bash 100 && \
@@ -27,7 +28,7 @@ RUN \
   a2enmod rewrite ssl headers macro rpaf cgi expires && \
   a2disconf other-vhosts-access-log && \
   a2enconf vhosts-logging && \
-  apt autoremove build-essential apache2-dev git -y && \
+  apt-get -y autoremove build-essential apache2-dev git && \
   cd /opt/configurability/src/configurability_apache2_process/ && \
   pip --no-cache install --upgrade . && \
   rm /tmp/mod_rpaf -rf && \
