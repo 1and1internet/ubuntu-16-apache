@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 # noinspection PyBroadException,PyUnboundLocalVariable
-def process(name, config, directory):
+def process(name, config, directory, config_translator=None):
     """
     Configures Apache 2 based on the input configuration.
 
@@ -30,6 +30,7 @@ def process(name, config, directory):
     :param name: Name of this section of the configuration
     :param config: The configuration dictionary for this section
     :param directory: The directory in which the input files are mounted
+    :param config_translator: Optional callable method for preprocessing config items
     :return:
     """
     for required_key in [
@@ -52,6 +53,10 @@ def process(name, config, directory):
         return  # abort but don't fail
 
     assert custom_values is not None and isinstance(custom_values, dict)
+
+    if config_translator:
+        for key, value in custom_values.iteritems():
+            custom_values[key] = config_translator.process(key, value)
 
     apache2_directory = os.path.join('etc', 'apache2')
 
