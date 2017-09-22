@@ -64,7 +64,10 @@ def process(name, config, directory):
 
     if document_root_key.lower() in custom_values:
         document_root = custom_values[document_root_key.lower()]
-        os.makedirs(os.path.join('var', 'www', document_root))
+
+        document_root_path = os.path.join('var', 'www', document_root)
+        if not os.path.exists(document_root_path):
+            os.makedirs(document_root_path)
 
         regex = re.compile('\${?%s}?' % document_root_key)
 
