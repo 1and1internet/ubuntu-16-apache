@@ -93,12 +93,15 @@ def process(name, config, directory, config_translator=None):
             for file_path in os.listdir(target_directory):
                 full_file_path = os.path.join(target_directory, file_path)
                 if os.path.isfile(full_file_path):
+                    write_needed = False
                     with open(full_file_path, 'r') as file_handle:
                         lines = file_handle.readlines()
                         for index, line in enumerate(lines):
-                            lines[index] = regex.sub(document_root, line)
-                    with open(full_file_path, 'w') as file_handle:
-                        file_handle.writelines(lines)
+                            lines[index] = regex.sub(document_root, lines[index])
+                            write_needed = write_needed or lines[index] != line
+                    if write_needed:
+                        with open(full_file_path, 'w') as file_handle:
+                            file_handle.writelines(lines)
 
         logger.info('%13s = %s' % (document_root_key, document_root))
 
