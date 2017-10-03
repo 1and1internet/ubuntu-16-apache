@@ -53,8 +53,8 @@ clean:
 	##
 	## Removing docker images .. most errors during this stage are ok, ignore them
 	##
-	for IMAGE in ${BASE_IMAGE} ${RSPEC_IMAGE}; \
-		do docker pull $${IMAGE}; \
+	for IMAGE in ${BASE_IMAGE} ${RSPEC_IMAGE} ${IMAGE_NAME}; \
+		do docker rmi $${IMAGE}; \
 	done
 
 .PHONY: all pull build test do-test checkout-drone-tests run-rspec clean
