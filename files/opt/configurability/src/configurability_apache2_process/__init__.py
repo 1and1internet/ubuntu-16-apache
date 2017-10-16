@@ -113,6 +113,7 @@ def process(name, config, directory, config_translator=None):
         if custom_values['gzip'].strip().upper() != 'OFF':
             gzip_level = custom_values[gzip_key]
         else:
+            gzip_level = None
             gzip = False
 
         #
@@ -134,4 +135,5 @@ def process(name, config, directory, config_translator=None):
                         "DeflateCompressionLevel %s\n" % gzip_level
                     )
 
-        logger.info('%13s = %s' % (gzip_key.upper(), gzip_level))
+        if gzip_level:
+            logger.info('%13s = %s' % (gzip_key.upper(), gzip_level))
