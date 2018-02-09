@@ -103,7 +103,7 @@ def process(name, config, directory, config_translator=None):
                         with open(full_file_path, 'w') as file_handle:
                             file_handle.writelines(lines)
 
-        logger.info('%13s = %s' % (document_root_key, document_root))
+        logger.info('%14s = %s' % (document_root_key, document_root))
 
     gzip_key = 'gzip'
     if gzip_key in custom_values:
@@ -136,4 +136,37 @@ def process(name, config, directory, config_translator=None):
                     )
 
         if gzip_level:
-            logger.info('%13s = %s' % (gzip_key.upper(), gzip_level))
+            logger.info('%14s = %s' % (gzip_key.upper(), gzip_level))
+
+    if 'fancy_indexing' in custom_values:
+        mod_alias_file = "/etc/apache2/mods-available/alias.conf"
+        mod_alias_content = ""
+        with open(mod_alias_file) as fd:
+            mod_alias_content = fd.readlines()
+
+        fancy_indexing = custom_values['fancy_indexing']
+        new_mod_alias_content = []
+        found = False
+        for mod_alias_content_line in mod_alias_content:
+            if mod_alias_content_line.find("Alias /icons/ \"/usr/share/apache2/icons/\"") > -1:
+                found = True
+                if fancy_indexing:
+                    new_mod_alias_content.append("\tAlias /icons/ \"/usr/share/apache2/icons/\"\n")
+                else:
+                    new_mod_alias_content.append("\t# Alias /icons/ \"/usr/share/apache2/icons/\"\n")
+            else:
+                new_mod_alias_content.append(mod_alias_content_line)
+
+        mod_alias_content = new_mod_alias_content
+        new_mod_alias_content = []
+        if not found and fancy_indexing:
+            for mod_alias_content_line in mod_alias_content:
+                if mod_alias_content_line.find("<Directory") > -1:
+                    new_mod_alias_content.append("\tAlias /icons/ \"/usr/share/apache2/icons/\"\n\n")
+                new_mod_alias_content.append(mod_alias_content_line)
+            mod_alias_content = new_mod_alias_content
+
+        with open(mod_alias_file, 'w') as fd:
+            for mod_alias_content_line in mod_alias_content:
+                fd.write(mod_alias_content_line)
+        logger.info('%14s = %s' % ("FANCY INDEXING", str(fancy_indexing)))
