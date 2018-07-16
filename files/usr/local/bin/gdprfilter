@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+APACHE_LOG_DIR=$1
+LOG_TYPE=$2
+HOSTNAME=$(hostname)
+LOG_ROOT_NAME=${APACHE_LOG_DIR}/${HOSTNAME}-${LOG_TYPE}_log
+IFS=$'\n'
+
+while read LOG_LINE; do
+    echo $LOG_LINE | /bin/sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1???/g'
+done | /usr/bin/cronolog -S ${LOG_ROOT_NAME} -P ${LOG_ROOT_NAME}.1 ${LOG_ROOT_NAME}-%Y-%m-%d.log
