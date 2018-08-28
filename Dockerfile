@@ -9,7 +9,7 @@ ENV SSL_KEY=/ssl/ssl.key \
     MAXCONNECTIONSPERCHILD=500
 RUN \
   apt-get update && \
-  apt-get install -o Dpkg::Options::=--force-confdef -y apache2 cronolog build-essential git apache2-dev && \
+  apt-get install -o Dpkg::Options::=--force-confdef -y apache2 cronolog build-essential git apache2-dev poppler-utils && \
   mkdir /tmp/mod_rpaf && \
   git clone https://github.com/gnif/mod_rpaf.git /tmp/mod_rpaf && \
   update-alternatives --install /bin/sh sh /bin/bash 100 && \
