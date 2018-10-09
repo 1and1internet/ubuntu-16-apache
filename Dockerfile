@@ -28,6 +28,7 @@ RUN \
   echo 'MaxConnectionsPerChild ${MAXCONNECTIONSPERCHILD}' >> /etc/apache2/apache2.conf && \
   sed -i -e 's/Listen 80/Listen 8080/g' /etc/apache2/ports.conf && \
   sed -i -e 's/Listen 443/#Listen 8443/g' /etc/apache2/ports.conf && \
+  echo "Listen 8081" >> /etc/apache2/ports.conf && \
   a2enmod deflate rewrite ssl headers macro rpaf cgi expires include && \
   a2disconf other-vhosts-access-log && \
   a2enconf vhosts-logging && \
