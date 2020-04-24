@@ -6,8 +6,12 @@ if [[ ! -e "$SSL_KEY" ]] && [[ ! -e "$SSL_CERT" ]]; then
   echo "Not enabling SSL as neither key nor cert provided."
   exit 0
 
-#If key and cert are provided, check they match. 
+#If key and cert are provided, check they match.
 elif [[ ! -z "$SSL_KEY" ]] && [[ ! -z "$SSL_CERT" ]]; then
+  [ "$(cat $SSL_KEY)" == "" ] || \
+    [ "$(cat $SSL_CERT)" == "" ] && \
+    echo "Empty ssl file(s), skipping ssl config" && \
+    exit 0
 
   KEYCHECK=`openssl rsa -in "$SSL_KEY" -check 2>&1 | grep --quiet "ok" ; echo $?`
   if [ "$KEYCHECK" == "1"  ]; then
@@ -41,7 +45,7 @@ elif [[ ! -z "$SSL_KEY" ]] && [[ ! -z "$SSL_CERT" ]]; then
   fi
 
 #Otherwise we will fail startup.
-else 
+else
   echo "Missing either SSL key or cert. Failed to configure SSL, exiting."
   exit 1
 fi
