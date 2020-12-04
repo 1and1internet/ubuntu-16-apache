@@ -1,32 +1,14 @@
 ---
 pipeline:
 
-  pull_tools:
-    when:
-      event: push
-    image: docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /secrets:/secrets
-    commands:
-      - docker --config /secrets/ pull 1and1internet/template-library-tools
-      - docker --config /secrets/ pull 1and1internet/ubuntu-16-rspec
-
-  pull_upstream:
-    when:
-      event: push
-    image: 1and1internet/template-library-tools
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-      - make --environment-overrides pull IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
-
   build:
     when:
       event: push
     image: 1and1internet/template-library-tools
+    pull: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /secrets:/root/.docker
     commands:
       - make --environment-overrides build IMAGE_NAME=build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/}
 
@@ -34,6 +16,7 @@ pipeline:
     when:
       event: push
     image: 1and1internet/ubuntu-16-rspec
+    pull: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
@@ -61,15 +44,7 @@ pipeline:
       - /secrets:/secrets
     commands:
       - images_tool -s /secrets/ -w /shared_storage --image-name build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/} --clean-workspace
-
-  clean_docker:
-    when:
-      event: push
-      status: [success, failure]
-    image: docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /secrets:/secrets
-    commands:
-      - docker rm -f $(docker ps -a | grep -v "$${HOSTNAME}" | awk '{print $1}') || true
-      - docker rmi -f $(docker images -q) || true
+      - docker container prune -f || true
+      - docker image prune -f
+      - docker images --format "{{.Repository}}:{{.Tag}}" | egrep -v 'none|template-library-tools|testpack-framework|git'
+      - docker rmi -f $(docker images --format "{{.Repository}}:{{.Tag}}" | egrep -v 'none|template-library-tools|testpack-framework|git') || true
