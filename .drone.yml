@@ -46,5 +46,4 @@ pipeline:
       - images_tool -s /secrets/ -w /shared_storage --image-name build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/} --clean-workspace
       - docker container prune -f || true
       - docker image prune -f
-      - docker images --format "{{.Repository}}:{{.Tag}}" | egrep -v 'none|template-library-tools|testpack-framework|git'
       - docker rmi -f $(docker images --format "{{.Repository}}:{{.Tag}}" | egrep -v 'none|template-library-tools|testpack-framework|git') || true
