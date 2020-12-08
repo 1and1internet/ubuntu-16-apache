@@ -1,5 +1,16 @@
 ---
 pipeline:
+  pre_clean:
+    when:
+      event: push
+    image: 1and1internet/template-library-tools
+    pull: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker container prune -f || true
+      - docker image prune -f
+      - docker rmi -f $(docker images --format "{{.Repository}}:{{.Tag}}" | egrep -v 'none|template-library-tools|testpack-framework|git') || true
 
   build:
     when:
@@ -31,7 +42,7 @@ pipeline:
       - /shared_storage:/shared_storage
       - /secrets:/secrets
     commands:
-      - images_tool -s /secrets/ -w /shared_storage --image-name build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/} --publish-image
+      - images_tool -s /secrets/ -w /shared_storage --image-name build-${CI_BUILD_NUMBER}-${CI_REPO#*/}/${CI_REPO#*/} --publish-image-unstable --skip-compare
 
   clean_workspace:
     when:
